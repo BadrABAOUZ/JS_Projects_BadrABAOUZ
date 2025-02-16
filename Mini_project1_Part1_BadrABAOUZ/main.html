@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QCM JavaScript</title>
+    <style>
+        /* Basic Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background: #6a11cb; /* Purple background */
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1); /* Semi-transparent white container */
+            border-radius: 10px;
+            padding: 20px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        #score {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+
+        #timer {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        .question {
+            margin-bottom: 20px;
+        }
+
+        .question h3 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .question button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.2); 
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .question button.selected {
+            background: #28a745; 
+        }
+
+        #submit {
+            padding: 10px 20px;
+            font-size: 1em;
+            background: #28a745; 
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #submit:hover {
+            background: #218838; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>QCM JavaScript</h1>
+        <div id="score">Score: 0</div> <!-- Display the current score -->
+        <div id="timer">Temps restant: 30s</div> <!-- Display the remaining time -->
+        <div id="quiz-container">
+        </div>
+        <button id="submit">Soumettre</button> <!-- Submit button to end the quiz -->
+    </div>
+
+    <script>
+        // List of questions with answers and correct answers
+        const questions = [
+            {
+                question: "Quelle est le meilleure departement UM6P",
+                answers: ["CS", "FMS", "EMINES", "GTI"],
+                correctAnswer: "CS"
+            },
+            {
+                question: "Quelle est la capitale du MAROC",
+                answers: ["Rabat", "FESS", "Meknes", "LAAYOUNE"],
+                correctAnswer: "Rabat"
+            },
+            {
+                question: "Quel langage est utilisé pour le style de ce site?",
+                answers: ["HTML", "CSS", "JavaScript", "Python"],
+                correctAnswer: "CSS"
+            }
+        ];
+
+        let currentQuestionIndex = 0; // Track the current question
+        let score = 0; // Track the user's score
+        let timeLeft = 30; // Timer for the quiz
+        let timer; // Variable to store the timer interval
+
+        // Function to display the current question
+        function displayQuestion() {
+            const quizContainer = document.getElementById('quiz-container');
+            quizContainer.innerHTML = ''; // Clear the container
+
+            const question = questions[currentQuestionIndex]; // Get the current question
+            const questionElement = document.createElement('div');
+            questionElement.className = 'question';
+            questionElement.innerHTML = `<h3>${question.question}</h3>`; // Display the question text
+
+            // Create buttons for each answer
+            question.answers.forEach(answer => {
+                const button = document.createElement('button');
+                button.textContent = answer;
+                button.onclick = () => selectAnswer(answer, button); // Handle answer selection
+                questionElement.appendChild(button);
+            });
+
+            quizContainer.appendChild(questionElement); // Add the question to the container
+        }
+
+        // Function to handle answer selection
+        function selectAnswer(answer, button) {
+            const question = questions[currentQuestionIndex];
+            if (answer === question.correctAnswer) {
+                score++; // Increase the score if the answer is correct
+                document.getElementById('score').innerText = `Score: ${score}`; // Update the score display
+            }
+
+            // Add a visual indicator for the selected answer
+            const buttons = document.querySelectorAll('.question button');
+            buttons.forEach(btn => btn.classList.remove('selected')); // Remove selection from all buttons
+            button.classList.add('selected'); // Highlight the selected button
+
+            nextQuestion(); // Move to the next question
+        }
+
+        // Function to move to the next question
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                displayQuestion(); // Display the next question
+            } else {
+                endQuiz(); // End the quiz if all questions are answered
+            }
+        }
+
+        // Function to start the timer
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--; // Decrease the time left
+                document.getElementById('timer').innerText = `Temps restant: ${timeLeft}s`; // Update the timer display
+                if (timeLeft <= 0) {
+                    clearInterval(timer); // Stop the timer
+                    endQuiz(); // End the quiz when time runs out
+                }
+            }, 1000); // Update every second
+        }
+
+        // Function to end the quiz
+        function endQuiz() {
+            clearInterval(timer); // Stop the timer
+            alert(`Quiz terminé! Votre score est ${score}/${questions.length}`); // Show the final score
+            window.scrollTo(0, 0); // Scroll to the top of the page
+        }
+
+        // Event listener for the submit button
+        document.getElementById('submit').onclick = endQuiz;
+
+        // Start the quiz
+        displayQuestion(); // Display the first question
+        startTimer(); // Start the timer
+    </script>
+</body>
+</html>
