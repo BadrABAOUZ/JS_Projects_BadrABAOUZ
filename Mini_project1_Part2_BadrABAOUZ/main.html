@@ -1,1 +1,272 @@
-00
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz avec Open Trivia Database</title>
+    <style>
+        /* Basic body styling with a purple background and centered content */
+        body {
+            font-family: Arial, sans-serif;
+            background: #6a1b9a; 
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* Container styling for the quiz configuration, quiz, and results */
+        .container {
+            background: #fff; 
+            border-radius: 12px;
+            padding: 30px;
+            width: 500px; 
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2); 
+            text-align: center;
+        }
+
+        /* Styling for the main heading */
+        h1 {
+            font-size: 28px; 
+            margin-bottom: 20px;
+            color: #4a148c; 
+        }
+
+        /* Styling for labels in the form */
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #4a148c; 
+        }
+
+        /* Styling for input fields and dropdowns */
+        select, input {
+            width: 100%;
+            padding: 12px; 
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd; 
+            font-size: 16px; 
+        }
+
+        /* Styling for buttons */
+        button {
+            padding: 12px 24px; 
+            font-size: 16px; 
+            background: #ab47bc; 
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* Hover effect for buttons */
+        button:hover {
+            background: #8e24aa; 
+        }
+
+        /* Styling for each question */
+        .question {
+            margin-bottom: 20px;
+        }
+
+        /* Styling for the question text */
+        .question h3 {
+            font-size: 20px; 
+            margin-bottom: 15px;
+            color: #4a148c; 
+        }
+
+        /* Styling for answer buttons */
+        .question button {
+            display: block;
+            width: 100%;
+            padding: 12px; 
+            margin: 8px 0; 
+            background: #f3e5f5; 
+            border: none;
+            border-radius: 8px;
+            color: #4a148c; 
+            cursor: pointer;
+            font-size: 16px; 
+            text-align: left;
+        }
+
+        /* Styling for selected answer buttons */
+        .question button.selected {
+            background: #ab47bc; 
+            color: #fff; 
+        }
+
+        /* Styling for the results section (hidden by default) */
+        #results {
+            display: none;
+        }
+
+        /* Styling for the score display */
+        #score {
+            font-size: 24px; 
+            font-weight: bold;
+            color: #4a148c; 
+        }
+    </style>
+</head>
+<body>
+    <!-- Quiz configuration section -->
+    <div class="container" id="config-container">
+        <h1>Configuration du Quiz</h1>
+        <form id="quiz-config">
+            <!-- Input for number of questions -->
+            <label for="num-questions">Nombre de questions:</label>
+            <input type="number" id="num-questions" name="num-questions" min="1" max="50" required>
+
+            <!-- Dropdown for category selection -->
+            <label for="category">Catégorie:</label>
+            <select id="category" name="category">
+                <option value="">Any Category</option>
+            </select>
+
+            <!-- Dropdown for difficulty selection -->
+            <label for="difficulty">Difficulté:</label>
+            <select id="difficulty" name="difficulty">
+                <option value="">Any Difficulty</option>
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+            </select>
+
+            <!-- Dropdown for question type selection -->
+            <label for="type">Type de question:</label>
+            <select id="type" name="type">
+                <option value="">Any Type</option>
+                <option value="multiple">Multiple Choice</option>
+                <option value="boolean">True/False</option>
+            </select>
+
+            <!-- Button to generate the quiz -->
+            <button type="submit">Générer le Quiz</button>
+        </form>
+    </div>
+
+    <div class="container" id="quiz-container" style="display:none;">
+        <h1>Quiz</h1>
+        <div id="questions"></div> 
+        <button id="submit-quiz">Soumettre</button> 
+    </div>
+
+    <div class="container" id="results" style="display:none;">
+        <h1>Résultats</h1>
+        <p id="score"></p> 
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get references to important elements
+            const quizConfigForm = document.getElementById('quiz-config');
+            const configContainer = document.getElementById('config-container');
+            const quizContainer = document.getElementById('quiz-container');
+            const questionsContainer = document.getElementById('questions');
+            const resultsContainer = document.getElementById('results');
+            const scoreDisplay = document.getElementById('score');
+            const submitQuizButton = document.getElementById('submit-quiz');
+
+            let questions = []; 
+            let userAnswers = []; 
+
+            // Fetch categories from the Open Trivia Database API
+            fetch('https://opentdb.com/api_category.php')
+                .then(response => response.json())
+                .then(data => {
+                    const categorySelect = document.getElementById('category');
+                    // Add each category to the dropdown
+                    data.trivia_categories.forEach(category => {
+                        const option = document.createElement('option');
+                        option.value = category.id;
+                        option.textContent = category.name;
+                        categorySelect.appendChild(option);
+                    });
+                });
+
+            // Handle quiz configuration form submission
+            quizConfigForm.addEventListener('submit', (e) => {
+                e.preventDefault(); // Prevent the form from submitting normally
+
+                // Get the selected values from the form
+                const numQuestions = document.getElementById('num-questions').value;
+                const category = document.getElementById('category').value;
+                const difficulty = document.getElementById('difficulty').value;
+                const type = document.getElementById('type').value;
+
+                // Build the API URL with the selected options
+                const apiUrl = `https://opentdb.com/api.php?amount=${numQuestions}&category=${category}&difficulty=${difficulty}&type=${type}`;
+
+                // Fetch the quiz questions from the API
+                fetch(apiUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        questions = data.results; // Store the questions
+                        displayQuestions(questions); // Display the questions
+                        configContainer.style.display = 'none'; // Hide the config section
+                        quizContainer.style.display = 'block'; // Show the quiz section
+                    });
+            });
+
+            // Function to display the quiz questions
+            function displayQuestions(questions) {
+                questionsContainer.innerHTML = ''; // Clear any existing questions
+                questions.forEach((question, index) => {
+                    const questionElement = document.createElement('div');
+                    questionElement.className = 'question';
+                    questionElement.innerHTML = `<h3>${question.question}</h3>`; // Display the question text
+
+                    // Combine correct and incorrect answers and shuffle them
+                    const answers = [...question.incorrect_answers, question.correct_answer];
+                    answers.sort(() => Math.random() - 0.5);
+
+                    // Create a button for each answer
+                    answers.forEach(answer => {
+                        const button = document.createElement('button');
+                        button.textContent = answer;
+                        button.onclick = () => selectAnswer(index, answer, button); // Handle answer selection
+                        questionElement.appendChild(button);
+                    });
+
+                    questionsContainer.appendChild(questionElement); // Add the question to the container
+                });
+            }
+
+            // Function to handle answer selection
+            function selectAnswer(questionIndex, answer, button) {
+                const questionElement = questionsContainer.children[questionIndex];
+                const buttons = questionElement.querySelectorAll('button');
+                // Remove the 'selected' class from all buttons
+                buttons.forEach(btn => btn.classList.remove('selected'));
+                // Add the 'selected' class to the clicked button
+                button.classList.add('selected');
+                // Store the user's answer
+                userAnswers[questionIndex] = answer;
+            }
+
+            // Handle quiz submission
+            submitQuizButton.addEventListener('click', () => {
+                let score = 0;
+                // Calculate the score by comparing user answers with correct answers
+                questions.forEach((question, index) => {
+                    if (userAnswers[index] === question.correct_answer) {
+                        score++;
+                    }
+                });
+
+                // Hide the quiz section and show the results section
+                quizContainer.style.display = 'none';
+                resultsContainer.style.display = 'block';
+                // Display the final score
+                scoreDisplay.textContent = `Votre score est ${score}/${questions.length}`;
+            });
+        });
+    </script>
+</body>
+</html>
