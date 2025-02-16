@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+    <style>
+        /* Basic Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background: #6a1b9a;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: #fff;
+            border-radius: 12px;
+            padding: 30px;
+            width: 450px; 
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-size: 28px; 
+            text-align: center;
+            color: #4a148c; 
+            margin-bottom: 20px;
+        }
+
+        #search {
+            width: 100%;
+            padding: 12px; 
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 16px; 
+        }
+
+        #todo-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .list-group-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px; 
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 12px; 
+            background: #f3e5f5; 
+            color: #4a148c; 
+            font-size: 18px; 
+        }
+
+        .delete {
+            cursor: pointer;
+            color: #d32f2f; 
+            font-size: 20px; 
+        }
+
+        #add-todo-form {
+            display: flex;
+            gap: 12px; 
+            margin-top: 20px;
+        }
+
+        #new-todo {
+            flex: 1;
+            padding: 12px; 
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px; 
+        }
+
+        #add-todo-form button {
+            padding: 12px 20px; 
+            background: #ab47bc; 
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px; 
+        }
+
+        #add-todo-form button:hover {
+            background: #8e24aa; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Todo List</h1>
+
+        <!-- Search Bar -->
+        <input type="text" id="search" placeholder="Rechercher une tâche...">
+
+        <!-- Task List -->
+        <ul id="todo-list">
+            <!-- Tasks will be added here dynamically -->
+        </ul>
+
+        <!-- Add Task Form -->
+        <form id="add-todo-form">
+            <input type="text" id="new-todo" placeholder="Ajouter une nouvelle tâche..." required>
+            <button type="submit">Ajouter</button>
+        </form>
+    </div>
+
+    <script>
+        // JavaScript for Adding and Deleting Tasks
+        const todoList = document.getElementById('todo-list');
+        const addTodoForm = document.getElementById('add-todo-form');
+        const searchInput = document.getElementById('search');
+
+        // Add Task
+        addTodoForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newTodoInput = document.getElementById('new-todo');
+            const todoText = newTodoInput.value.trim();
+
+            if (todoText !== '') {
+                // Create a new task item
+                const todoItem = document.createElement('li');
+                todoItem.className = 'list-group-item';
+                todoItem.innerHTML = `
+                    <span>${todoText}</span>
+                    <span class="delete">🗑️</span>
+                `;
+
+                // Add delete functionality
+                todoItem.querySelector('.delete').addEventListener('click', () => {
+                    todoItem.remove();
+                });
+
+                // Add the task to the list
+                todoList.appendChild(todoItem);
+                newTodoInput.value = ''; // Clear the input field
+            }
+        });
+
+        // Search Tasks
+        searchInput.addEventListener('input', () => {
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            const todos = todoList.querySelectorAll('li');
+
+            todos.forEach(todo => {
+                const todoText = todo.querySelector('span').textContent.toLowerCase();
+                if (todoText.includes(searchTerm)) {
+                    todo.style.display = 'flex'; // Show the task
+                } else {
+                    todo.style.display = 'none'; // Hide the task
+                }
+            });
+        });
+    </script>
+</body>
+</html>
