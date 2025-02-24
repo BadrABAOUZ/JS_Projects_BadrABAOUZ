@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+<style>
+        .task {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .completed {
+            text-decoration: line-through;
+            color: gray;
+        }
+        .filter-button {
+            margin: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .active {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <h1>Gestion des tâches</h1>
+        
+        <!-- Filtrage des tâches -->
+        <div>
+            <button class="filter-button" :class="{ active: filter === 'all' }" @click="filter = 'all'">Toutes</button>
+            <button class="filter-button" :class="{ active: filter === 'active' }" @click="filter = 'active'">À faire</button>
+            <button class="filter-button" :class="{ active: filter === 'completed' }" @click="filter = 'completed'">Terminées</button>
+        </div>
+
+        <!-- Affichage des tâches -->
+        <div v-for="task in filteredTasks" :key="task.id" class="task" :class="{ completed: task.completed }">
+            <h3>{{ task.title }}</h3>
+            <p>{{ task.description }}</p>
+            <button v-show="!task.completed" @click="markAsCompleted(task)">Marquer comme terminée</button>
+        </div>
+
+        <!-- Nombre total de tâches -->
+        <p>Nombre total de tâches : {{ totalTasks }}</p>
+    </div>
+
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    tasks: [],
+                    filter: 'all' // 'all', 'active', 'completed'
+                };
+            },
+            created() {
+                // Chargement des tâches depuis le fichier JSON
+                fetch('tasks.json')
+                    .then(response => response.json())
+                    .then(data => {
+                        this.tasks = data;
+                    });
+            },
+            computed: {
+                filteredTasks() {
+                    if (this.filter === 'active') {
+                        return this.tasks.filter(task => !task.completed);
+                    } else if (this.filter === 'completed') {
+                        return this.tasks.filter(task => task.completed);
+                    } else {
+                        return this.tasks;
+                    }
+                },
+                totalTasks() {
+                    return this.tasks.length;
+                }
+            },
+            methods: {
+                markAsCompleted(task) {
+                    task.completed = true;
+                }
+            }
+        });
+
+        app.mount('#app');
+    </script>
+</body>
+
+</html>
