@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Manipulation de vue</title>
+<script src="https://unpkg.com/vue@next"></script>
+</head>
+<body>
+
+<div id="monapp">
+    <label>
+        <input type="radio" v-model="couleurTexte" value="red"> Rouge
+    </label>
+    <label>
+        <input type="radio" v-model="couleurTexte" value="blue"> Bleu
+    </label>
+    
+    <label>
+        <input type="checkbox" v-model="afficherParagraphe"> Afficher/cacher le paragraphe
+    </label>
+
+    <p v-if="afficherParagraphe" :style="{ color: couleurTexte }">
+        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ullam pariatur mollitia et, inventore delectus. Doloribus laudantium maiores at necessit ipsum distinctio?
+    </p>
+</div>
+
+<script>
+    const appli = {
+        data() {
+            return {
+                couleurTexte: 'red', // Couleur par défaut
+                afficherParagraphe: true // Paragraphe visible par défaut
+            }
+        }
+    };
+
+    Vue.createApp(appli).mount("#monapp");
+</script>
+
+</body>
+</html>
