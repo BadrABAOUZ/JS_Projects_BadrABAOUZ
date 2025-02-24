@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Compteur Vue.js</title>
+<script src="https://unpkg.com/vue@next"></script>
+</head>
+<body>
+
+<div id="monapp">
+    <!-- Bouton pour incrémenter le compteur -->
+    <button @click="incrementer">++</button>
+    
+    <!-- Affichage du compteur -->
+    <span>{{ compteur }}</span>
+    
+    <!-- Bouton pour décrémenter le compteur -->
+    <button @click="decrementer">--</button>
+</div>
+
+<script>
+    const appli = {
+        data() {
+            return {
+                // Propriété compteur initialisée à 0
+                compteur: 0
+            }
+        },
+        methods: {
+            // Méthode pour incrémenter le compteur
+            incrementer() {
+                this.compteur++;
+            },
+            // Méthode pour décrémenter le compteur
+            decrementer() {
+                this.compteur--;
+            }
+        }
+    };
+
+    // Création et montage de l'application Vue
+    Vue.createApp(appli).mount("#monapp");
+</script>
+
+</body>
+</html>
