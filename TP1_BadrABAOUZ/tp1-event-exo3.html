@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Validation de saisie</title>
+<script src="https://unpkg.com/vue@next"></script> 
+<style>
+    /* Style de base pour le message (caché par défaut) */
+    .message-rappel {
+        color: red;
+        display: none; /* Caché par défaut */
+    }
+
+    .message-rappel.visible {
+        display: block; 
+    }
+</style>
+</head>
+<body>
+
+<div id="monapp">
+    <input type="text" v-model="texteSaisi" @input="verifierEspace" placeholder="Saisissez du texte sans espace" />
+    
+    <p class="message-rappel" :class="{ visible: afficherMessage }">
+        Attention : La chaîne ne doit pas contenir d'espaces !
+    </p>
+</div>
+
+<script>
+    const appli = {
+        data() {
+            return {
+                // Propriété pour stocker le texte saisi
+                texteSaisi: "",
+                // Propriété pour contrôler l'affichage du message
+                afficherMessage: false // Par défaut, le message est caché
+            }
+        },
+        methods: {
+            // Méthode pour vérifier si le texte contient un espace
+            verifierEspace() {
+                console.log("Texte saisi:", this.texteSaisi); 
+                console.log("Contient un espace?", this.texteSaisi.includes(" ")); 
+                // Vérifie si le texte contient un espace
+                if (this.texteSaisi.includes(" ")) {
+                    this.afficherMessage = true; // Afficher le message si un espace est détecté
+                } else {
+                    this.afficherMessage = false; // Masquer le message si aucun espace n'est détecté
+                }
+
+                console.log("Afficher message:", this.afficherMessage); 
+            }
+        }
+    };
+
+    // Création et montage de l'application Vue
+    Vue.createApp(appli).mount("#monapp");
+</script>
+
+</body>
+</html>
