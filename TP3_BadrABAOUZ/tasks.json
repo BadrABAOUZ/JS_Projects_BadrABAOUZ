@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "title": "Atteindre séance web dev",
+        "description": "Assister à la séance de développement web et prendre des notes pour réviser plus tard.",
+        "completed": false
+    },
+    {
+        "id": 2,
+        "title": "Faire les courses à Marjane",
+        "description": "Acheter des fruits, des légumes, du lait et du pain.",
+        "completed": false
+    },
+    {
+        "id": 3,
+        "title": "Finir TP3 du web dev",
+        "description": "Compléter le TP3 de développement web en implémentant les fonctionnalités demandées.",
+        "completed": false
+    }
+]
