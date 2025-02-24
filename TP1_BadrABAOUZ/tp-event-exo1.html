@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>Manipulation de vue</title>
+  <script src="https://unpkg.com/vue@next"></script>
+</head>
+<body>
+
+  <div id="monapp">
+    <button @click="clic">{{ titre }}</button>
+  </div>
+
+  <script>
+    const appli = {
+      data() {
+        return {
+          // Propriété titre initialisée à "Cliquez moi!"
+          titre: "Cliquez moi!"
+        }
+      },
+      methods: {
+        // Méthode qui change la valeur de titre en "Cliqué!"
+        clic() {
+          this.titre = "Cliqué!";
+        }
+      }
+    };
+
+    Vue.createApp(appli).mount("#monapp");
+  </script>
+
+</body>
+</html>
